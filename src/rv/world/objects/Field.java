@@ -42,11 +42,20 @@ public class Field extends ModelObject implements GameStateChangeListener, GLDis
 			new Matrix(new double[] {-1.5, 0, 0, 0, 0, 0, 1, 0, 0, 1.5, 0, 0, 0, 0, 0, 1});
 
 	private static final int CIRCLE_SEGMENTS = 60;
-	private static final float PENALTY_WIDTH = 2.1f;
-	private static final float PENALTY_LENGTH = 1.8f;
-	private static final float GOAL_BOX_WIDTH = 3.9f;
-	private static final float GOAL_BOX_LENGTH = 1.8f;
-	private static final float LINE_THICKNESS = 0.02f;
+
+    // Original Field line dimensions
+	// private static final float PENALTY_WIDTH = 2.1f;
+	// private static final float PENALTY_LENGTH = 1.8f;
+	// private static final float GOAL_BOX_WIDTH = 3.9f;
+	// private static final float GOAL_BOX_LENGTH = 1.8f;
+	// private static final float LINE_THICKNESS = 0.02f;
+
+	// SPL line dimensions
+	private static final float PENALTY_WIDTH = 0.0f; // no penalty box
+	private static final float PENALTY_LENGTH = 0.0f; // no penalty box
+	private static final float GOAL_BOX_WIDTH = 2.2f;
+	private static final float GOAL_BOX_LENGTH = 0.6f * 2;  // for some reason they want double 600mm
+	private static final float LINE_THICKNESS = 0.050f / 2; // for some reason they want half of 50mm
 
 	private final Material lineMaterial = new Material();
 	private float[][] circleVerts;
