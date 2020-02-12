@@ -51,11 +51,11 @@ public class Field extends ModelObject implements GameStateChangeListener, GLDis
 	// private static final float LINE_THICKNESS = 0.02f;
 
 	// SPL line dimensions
-	private static final float PENALTY_WIDTH = 0.0f; // no penalty box
-	private static final float PENALTY_LENGTH = 0.0f; // no penalty box
-	private static final float GOAL_BOX_WIDTH = 2.2f;
-	private static final float GOAL_BOX_LENGTH = 0.6f * 2;  // for some reason they want double 600mm
-	private static final float LINE_THICKNESS = 0.050f / 2; // for some reason they want half of 50mm
+	private static final float GOAL_BOX_WIDTH = 2.2f; 
+	private static final float GOAL_BOX_LENGTH = 0.6f;
+	private static final float PENALTY_WIDTH  = 4.0f;
+	private static final float PENALTY_LENGTH  = 1.65f;
+	private static final float LINE_THICKNESS = 0.050f; // for some reason they want half of 50mm
 
 	private final Material lineMaterial = new Material();
 	private float[][] circleVerts;
@@ -75,42 +75,63 @@ public class Field extends ModelObject implements GameStateChangeListener, GLDis
 	/** Creates the field lines based on dimensions in game state */
 	private void calculateLineGeometry(GameState gs)
 	{
-		float hfl = gs.getFieldLength() / 2.0f;
-		float hfw = gs.getFieldWidth() / 2.0f;
-		float goalWidth = GOAL_BOX_WIDTH + PENALTY_WIDTH;
-		float goalLength = GOAL_BOX_LENGTH + PENALTY_LENGTH;
-		float hgw = goalWidth / 2.0f;
-		float hgl = goalLength / 2.0f;
+		float hfl = gs.getFieldLength() / 2.0f; // half field length
+		float hfw = gs.getFieldWidth() / 2.0f; 	// half field width
+		float hgw = GOAL_BOX_WIDTH / 2.0f;   	// half goal box width
+		float gl = GOAL_BOX_LENGTH;				// goal box length
+		float hpw = PENALTY_WIDTH / 2.0f;		// half penalty box width
+		float pl = PENALTY_LENGTH; 				// penalty box width
+		float hlt = LINE_THICKNESS / 2.0f;		// half line thickness
 
+		// Define all relevant line vertices here, connect them by index to define
+		// lines below
 		lineVerts = new float[][] {
-				// border lines
-				{-hfl - LINE_THICKNESS, 0, hfw + LINE_THICKNESS}, {-hfl - LINE_THICKNESS, 0, -hfw - LINE_THICKNESS},
-				{hfl + LINE_THICKNESS, 0, -hfw - LINE_THICKNESS}, {hfl + LINE_THICKNESS, 0, hfw + LINE_THICKNESS},
-				{-hfl + LINE_THICKNESS, 0, hfw - LINE_THICKNESS}, {-hfl + LINE_THICKNESS, 0, -hfw + LINE_THICKNESS},
-				{hfl - LINE_THICKNESS, 0, -hfw + LINE_THICKNESS}, {hfl - LINE_THICKNESS, 0, hfw - LINE_THICKNESS},
+				// border lines (index  0 - 7)
+				{-hfl - hlt, 0, hfw + hlt}, {-hfl - hlt, 0, -hfw - hlt},
+				{hfl + hlt, 0, -hfw - hlt}, {hfl + hlt, 0, hfw + hlt},
+				{-hfl + hlt, 0, hfw - hlt}, {-hfl + hlt, 0, -hfw + hlt},
+				{hfl - hlt, 0, -hfw + hlt}, {hfl - hlt, 0, hfw - hlt},
 
-				// center line
-				{-LINE_THICKNESS, 0, hfw}, {-LINE_THICKNESS, 0, -hfw}, {LINE_THICKNESS, 0, -hfw},
-				{LINE_THICKNESS, 0, hfw},
+				// center line (index  8 - 11)
+				{-hlt, 0, hfw}, {-hlt, 0, -hfw}, {hlt, 0, -hfw},
+				{hlt, 0, hfw},
 
-				// right goal box
-				{-hfl, 0, hgw + LINE_THICKNESS}, {-hfl, 0, hgw - LINE_THICKNESS},
-				{-hfl + hgl - LINE_THICKNESS, 0, hgw - LINE_THICKNESS},
-				{-hfl + hgl - LINE_THICKNESS, 0, -hgw + LINE_THICKNESS}, {-hfl, 0, -hgw + LINE_THICKNESS},
-				{-hfl, 0, -hgw - LINE_THICKNESS}, {-hfl + hgl + LINE_THICKNESS, 0, -hgw - LINE_THICKNESS},
-				{-hfl + hgl + LINE_THICKNESS, 0, hgw + LINE_THICKNESS},
+				// right goal box (index  12 - 19)
+				{-hfl, 0, hgw + hlt}, {-hfl, 0, hgw - hlt},
+				{-hfl + gl - hlt, 0, hgw - hlt},
+				{-hfl + gl - hlt, 0, -hgw + hlt}, {-hfl, 0, -hgw + hlt},
+				{-hfl, 0, -hgw - hlt}, {-hfl + gl + hlt, 0, -hgw - hlt},
+				{-hfl + gl + hlt, 0, hgw + hlt},
 
-				// left goal box
-				{hfl, 0, hgw + LINE_THICKNESS}, {hfl, 0, hgw - LINE_THICKNESS},
-				{hfl - hgl + LINE_THICKNESS, 0, hgw - LINE_THICKNESS},
-				{hfl - hgl + LINE_THICKNESS, 0, -hgw + LINE_THICKNESS}, {hfl, 0, -hgw + LINE_THICKNESS},
-				{hfl, 0, -hgw - LINE_THICKNESS}, {hfl - hgl - LINE_THICKNESS, 0, -hgw - LINE_THICKNESS},
-				{hfl - hgl - LINE_THICKNESS, 0, hgw + LINE_THICKNESS},
+				// left goal box (index 20 - 27)
+				{hfl, 0, hgw + hlt}, {hfl, 0, hgw - hlt},
+				{hfl - gl + hlt, 0, hgw - hlt},
+				{hfl - gl + hlt, 0, -hgw + hlt}, {hfl, 0, -hgw + hlt},
+				{hfl, 0, -hgw - hlt}, {hfl - gl - hlt, 0, -hgw - hlt},
+				{hfl - gl - hlt, 0, hgw + hlt},
+
+				// right penalty box (index 28 - 35)
+				{-hfl, 0, hpw + hlt}, {-hfl, 0, hpw - hlt},
+				{-hfl + pl - hlt, 0, hpw - hlt},
+				{-hfl + pl - hlt, 0, -hpw + hlt}, {-hfl, 0, -hpw + hlt},
+				{-hfl, 0, -hpw - hlt}, {-hfl + pl + hlt, 0, -hpw - hlt},
+				{-hfl + pl + hlt, 0, hpw + hlt},
+
+				// left penalty box (index 36 - 43)
+				{hfl, 0, hpw + hlt}, {hfl, 0, hpw - hlt},
+				{hfl - pl + hlt, 0, hpw - hlt},
+				{hfl - pl + hlt, 0, -hpw + hlt}, {hfl, 0, -hpw + hlt},
+				{hfl, 0, -hpw - hlt}, {hfl - pl - hlt, 0, -hpw - hlt},
+				{hfl - pl - hlt, 0, hpw + hlt},
 		};
 
 		lineIndices =
-				new int[][] {{0, 1, 5, 4}, {1, 2, 6, 5}, {2, 3, 7, 6}, {3, 0, 4, 7}, {8, 9, 10, 11}, {12, 13, 14, 19},
-						{19, 14, 15, 18}, {15, 16, 17, 18}, {20, 21, 22, 27}, {27, 22, 23, 26}, {23, 24, 25, 26}};
+				new int[][] {{0, 1, 5, 4}, {1, 2, 6, 5}, {2, 3, 7, 6}, {3, 0, 4, 7}, {8, 9, 10, 11}, // Field / center line
+						{12, 13, 14, 19}, {19, 14, 15, 18}, {15, 16, 17, 18}, // Left penalty box
+						{20, 21, 22, 27}, {27, 22, 23, 26}, {23, 24, 25, 26}, // Right penalty box
+						{36, 37, 38, 43}, {43, 38, 39, 42}, {39, 40, 41, 42}, // Left goal box
+						{28, 29, 30, 35}, {35, 30, 31, 34}, {31, 32, 33, 34}, // Right goal box
+						};
 
 		// center circle
 		float radius = gs.getFreeKickDistance();
@@ -120,8 +141,8 @@ public class Field extends ModelObject implements GameStateChangeListener, GLDis
 		for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
 			Vec3f v = new Vec3f((float) Math.cos(angleInc * i), 0, (float) Math.sin(angleInc * i));
 			v = v.normalize();
-			circleVerts[j++] = v.times(radius - LINE_THICKNESS).getVals();
-			circleVerts[j++] = v.times(radius + LINE_THICKNESS).getVals();
+			circleVerts[j++] = v.times(radius - hlt).getVals();
+			circleVerts[j++] = v.times(radius + hlt).getVals();
 		}
 
 		geometryUpdated = true;
